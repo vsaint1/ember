@@ -54,3 +54,20 @@ target("psystem")
             os.cp("res", path.join(target:targetdir(), "res"))
         end)
     end
+
+
+target("test")
+    set_kind("binary")
+
+    for _, file in ipairs(os.files("tests/test_*.c")) do
+        local name = path.basename(file)
+        target(name)
+            set_kind("binary")
+            set_default(false)
+            add_files(file)
+            add_tests(name)
+    end
+    
+    if not is_plat("windows")  then
+        add_cflags("-fPIC")
+    end
