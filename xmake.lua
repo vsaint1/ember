@@ -16,15 +16,14 @@ target("glad")
 target("psystem")
     set_kind("binary")
     
-    add_files("src/**/*.c")
-    add_files("src/main.c")
+    add_files("src/main.c","src/*.c")
 
     add_deps("glad")
 
-    add_packages("libsdl3")
-    add_links("glad")
+    add_packages("libsdl3", {public = true})
 
-
+    if is_plat("windows") then
+    end
 
     if not is_plat("windows")  then
         add_cflags("-fPIC")
@@ -56,18 +55,21 @@ target("psystem")
     end
 
 
-target("test")
-    set_kind("binary")
 
-    for _, file in ipairs(os.files("tests/test_*.c")) do
-        local name = path.basename(file)
-        target(name)
-            set_kind("binary")
-            set_default(false)
-            add_files(file)
-            add_tests(name)
-    end
-    
-    if not is_plat("windows")  then
-        add_cflags("-fPIC")
-    end
+for _, file in ipairs(os.files("tests/test_*.c")) do
+    local name = path.basename(file)
+    target(name)
+        set_kind("binary")
+        set_default(false)
+        add_files(file)
+        add_tests(name)
+        add_includedirs("src/")
+        add_files("src/*.c")
+        remove_files("src/main.c")
+        add_packages("libsdl3")
+        
+end
+
+if not is_plat("windows")  then
+    add_cflags("-fPIC")
+end
